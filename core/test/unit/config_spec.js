@@ -242,7 +242,7 @@ describe('Config', function () {
             var permalinkSetting = '/:year/:month/:day/:slug/',
                 /*jshint unused:false*/
                 testData = testUtils.DataGenerator.Content.posts[2],
-                today = new Date(),
+                today = testData.published_at,
                 dd = ('0' + today.getDate()).slice(-2),
                 mm = ('0' + (today.getMonth() + 1)).slice(-2),
                 yyyy = today.getFullYear(),
@@ -519,9 +519,33 @@ describe('Config', function () {
         it('allows server to use a socket', function (done) {
             overrideConfig({server: {socket: 'test'}});
 
-            config.load().then(function (localConfig) {
-                should.exist(localConfig);
-                localConfig.server.socket.should.equal('test');
+            config.load().then(function () {
+                var socketConfig = config.getSocket();
+
+                socketConfig.should.be.an.Object;
+                socketConfig.path.should.equal('test');
+                socketConfig.permissions.should.equal('660');
+
+                done();
+            }).catch(done);
+        });
+
+        it('allows server to use a socket and user-defined permissions', function (done) {
+            overrideConfig({
+                server: {
+                    socket: {
+                        path: 'test',
+                        permissions: '666'
+                    }
+                }
+            });
+
+            config.load().then(function () {
+                var socketConfig = config.getSocket();
+
+                socketConfig.should.be.an.Object;
+                socketConfig.path.should.equal('test');
+                socketConfig.permissions.should.equal('666');
 
                 done();
             }).catch(done);

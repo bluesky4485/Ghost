@@ -12,7 +12,6 @@ paginationSettings = {
 };
 
 TagsRoute = AuthenticatedRoute.extend(CurrentUserSettings, PaginationRouteMixin, {
-
     actions: {
         willTransition: function () {
             this.send('closeSettingsMenu');
@@ -22,10 +21,6 @@ TagsRoute = AuthenticatedRoute.extend(CurrentUserSettings, PaginationRouteMixin,
     titleToken: 'Tags',
 
     beforeModel: function () {
-        if (!this.get('config.tagsUI')) {
-            return this.transitionTo('settings.general');
-        }
-
         return this.currentUser()
             .then(this.transitionAuthor());
     },
